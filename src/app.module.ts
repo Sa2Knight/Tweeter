@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { User } from './entities/user.entity'
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { User } from './entities/user.entity'
       database: 'tweeter',
       entities: [User],
       synchronize: true
-    })
+    }),
+    UsersModule
   ],
   controllers: [AppController],
   providers: [AppService]
