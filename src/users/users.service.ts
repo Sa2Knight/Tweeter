@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'src/entities/user.entity'
 import { Repository } from 'typeorm'
@@ -13,7 +18,7 @@ export class UsersService {
     if (user) {
       return user
     } else {
-      return Promise.reject('user not found')
+      throw new NotFoundException('user not found')
     }
   }
 
@@ -24,7 +29,7 @@ export class UsersService {
     newUser.description = userPropertyDto.description || ''
 
     return this.usersRepository.save(newUser).catch(e => {
-      throw new InternalServerErrorException(e)
+      throw new BadRequestException('Failed to create user')
     })
   }
 }

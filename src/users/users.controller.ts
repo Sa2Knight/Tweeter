@@ -16,6 +16,6 @@ export class UsersController {
   @UsePipes(ValidationPipe)
   createTask(@Body() userPropertyDto: UserPropertyDto) {
     // FIXME: ユニーク制約違反時のエラーがイケてないのでベストプラクティスを確認する
-    return this.usersService.create(userPropertyDto).catch(e => e)
+    return this.usersService.create(userPropertyDto)
   }
 }
