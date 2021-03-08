@@ -1,13 +1,9 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException
-} from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'src/entities/user.entity'
 import { Repository } from 'typeorm'
-import { CreateUserPropertyDto } from './userProperty.dto'
+import { CreateUserPropertyDto } from './createUserProperty.dto'
+import { UpdateUserPropertyDto } from './updateUserProperty.dto'
 
 @Injectable()
 export class UsersService {
@@ -29,7 +25,17 @@ export class UsersService {
     newUser.description = userPropertyDto.description || ''
 
     return this.usersRepository.save(newUser).catch(e => {
-      throw new BadRequestException()
+      throw new BadRequestException('Failed to create user')
+    })
+  }
+
+  async update(id: number, userPropertyDto: UpdateUserPropertyDto): Promise<User> {
+    const user = await this.findOne(id)
+    user.displayName = userPropertyDto.displayName || user.displayName
+    user.description = userPropertyDto.description || user.description
+
+    return this.usersRepository.save(user).catch(e => {
+      throw new BadRequestException('Failed to update user')
     })
   }
 }

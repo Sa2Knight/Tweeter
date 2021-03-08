@@ -1,6 +1,7 @@
-import { Body, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Param, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common'
 import { Controller, Get, ParseIntPipe } from '@nestjs/common'
-import { CreateUserPropertyDto } from './userProperty.dto'
+import { CreateUserPropertyDto } from './createUserProperty.dto'
+import { UpdateUserPropertyDto } from './updateUserProperty.dto'
 import { UsersService } from './users.service'
 
 @Controller('users')
@@ -14,8 +15,13 @@ export class UsersController {
 
   @Post()
   @UsePipes(ValidationPipe)
-  createTask(@Body() userPropertyDto: CreateUserPropertyDto) {
-    // FIXME: ユニーク制約違反時のエラーがイケてないのでベストプラクティスを確認する
+  createUser(@Body() userPropertyDto: CreateUserPropertyDto) {
     return this.usersService.create(userPropertyDto)
+  }
+
+  @Patch('/:id')
+  @UsePipes(ValidationPipe)
+  updateUser(@Param('id', ParseIntPipe) id: number, @Body() userPropertyDto: UpdateUserPropertyDto) {
+    return this.usersService.update(id, userPropertyDto)
   }
 }
