@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'src/entities/user.entity'
-import { Repository } from 'typeorm'
+import { DeleteResult, Repository } from 'typeorm'
 import { CreateUserPropertyDto } from './createUserProperty.dto'
 import { UpdateUserPropertyDto } from './updateUserProperty.dto'
 
@@ -37,5 +37,10 @@ export class UsersService {
     return this.usersRepository.save(user).catch(e => {
       throw new BadRequestException('Failed to update user')
     })
+  }
+
+  async delete(id: number): Promise<DeleteResult> {
+    const user = await this.findOne(id)
+    return this.usersRepository.delete(user.id)
   }
 }
