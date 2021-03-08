@@ -1,9 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, Unique } from 'typeorm'
 
 @Entity()
+@Unique(['name'])
 export class User {
   @PrimaryGeneratedColumn()
-  id!: number
+  readonly id!: number
 
   @Column()
   name!: string

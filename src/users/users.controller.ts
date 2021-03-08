@@ -1,5 +1,6 @@
-import { Param } from '@nestjs/common'
+import { Body, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common'
 import { Controller, Get, ParseIntPipe } from '@nestjs/common'
+import { UserPropertyDto } from './userProperty.dto'
 import { UsersService } from './users.service'
 
 @Controller('users')
@@ -9,5 +10,12 @@ export class UsersController {
   @Get('/:id')
   getUserById(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOne(id)
+  }
+
+  @Post()
+  @UsePipes(ValidationPipe)
+  createTask(@Body() userPropertyDto: UserPropertyDto) {
+    // FIXME: ユニーク制約違反時のエラーがイケてないのでベストプラクティスを確認する
+    return this.usersService.create(userPropertyDto).catch(e => e)
   }
 }
