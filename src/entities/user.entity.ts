@@ -20,4 +20,8 @@ export class User {
 
   @UpdateDateColumn()
   readonly updatedAt!: Date
+
+  constructor(params: Partial<User>) {
+    Object.assign(this, params)
+  }
 }
