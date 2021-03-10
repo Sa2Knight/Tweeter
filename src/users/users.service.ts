@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { User } from 'src/entities/user.entity'
+import { User } from '../entities/user.entity'
 import { DeleteResult, Repository } from 'typeorm'
 import { CreateUserPropertyDto } from './createUserProperty.dto'
 import { UpdateUserPropertyDto } from './updateUserProperty.dto'
@@ -19,10 +19,11 @@ export class UsersService {
   }
 
   async create(userPropertyDto: CreateUserPropertyDto): Promise<User> {
-    const newUser = new User()
-    newUser.name = userPropertyDto.name
-    newUser.displayName = userPropertyDto.displayName
-    newUser.description = userPropertyDto.description || ''
+    const newUser = new User({
+      name: userPropertyDto.name,
+      displayName: userPropertyDto.displayName,
+      description: userPropertyDto.description || ''
+    })
 
     return this.usersRepository.save(newUser).catch(e => {
       throw new BadRequestException('Failed to create user')

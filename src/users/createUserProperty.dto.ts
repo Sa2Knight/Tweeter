@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator'
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator'
 
 export class CreateUserPropertyDto {
   @IsNotEmpty()
@@ -10,5 +10,6 @@ export class CreateUserPropertyDto {
   displayName!: string
 
   @IsString()
+  @IsOptional()
   description?: string
 }
