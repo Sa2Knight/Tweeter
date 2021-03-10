@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { User } from './entities/user.entity'
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './users/users.module'
 
 @Module({
   imports: [
@@ -12,7 +12,7 @@ import { UsersModule } from './users/users.module';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      database: 'tweeter',
+      database: `tweeter_${process.env.NODE_ENV}`,
       entities: [User],
       synchronize: true
     }),
