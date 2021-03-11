@@ -1,14 +1,9 @@
 import * as request from 'supertest'
 import { INestApplication } from '@nestjs/common'
-import { Test } from '@nestjs/testing'
-import { UsersModule } from './users.module'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from '../app.module'
 import { createConnection, Repository } from 'typeorm'
-import { UsersService } from './users.service'
-import { TypeOrmModule } from '@nestjs/typeorm'
 import { User } from '../entities/user.entity'
-import { endianness } from 'node:os'
 
 describe('Users', () => {
   let app: INestApplication
@@ -37,53 +32,46 @@ describe('Users', () => {
   })
 
   describe('GET /users/:id', () => {
-    it('存在するユーザーの場合、ユーザー情報が取得できる', async () => {
-      const userObject = { name: 'sasaki', displayName: '笹木', description: '自己紹介' }
-      const savedUser = await repository.save(new User(userObject))
+    const getUserRequest = (id: number) => request(app.getHttpServer()).get(`/users/${id}`)
 
-      request(app.getHttpServer())
-        .get(`/users/${savedUser.id}`)
+    it('存在するユーザーの場合、ユーザー情報が取得できる', async () => {
+      const savedUser = await repository.save(
+        new User({ name: 'sasaki', displayName: '笹木', description: '自己紹介' })
+      )
+      getUserRequest(savedUser.id)
         .expect(200)
-        .expect(res => expect(res.body).toMatchObject(userObject))
+        .expect(res => expect(res.body).toMatchObject({ id: savedUser.id, name: 'sasaki' }))
     })
 
     it('存在しないユーザーの場合、404 エラーが返ってくる', done => {
-      request(app.getHttpServer()).get('/users/1').expect(404, done)
+      getUserRequest(1).expect(404, done)
     })
   })
 
   describe('POST /users', () => {
+    const postUserRequest = (params: object) => request(app.getHttpServer()).post('/users').send(params)
+
     it('name, displayName, description を正しく指定した場合、作成したユーザーが返ってくる', done => {
       const params = { name: 'sasaki', displayName: '笹木', description: '自己紹介' }
-      request(app.getHttpServer())
-        .post('/users')
-        .send(params)
+      postUserRequest(params)
         .expect(201)
         .expect(res => expect(res.body).toMatchObject(params))
         .end(done)
     })
 
     it('description を省略した場合、 description が空でユーザーが作成される', done => {
-      request(app.getHttpServer())
-        .post('/users')
-        .send({ name: 'sasaki', displayName: '笹木' })
+      postUserRequest({ name: 'sasaki', displayName: '笹木' })
         .expect(201)
         .expect(res => expect(res.body).toMatchObject({ description: '' }))
         .end(done)
     })
 
     it('name を省略した場合、404 エラーが返ってくる', done => {
-      request(app.getHttpServer())
-        .post('/users')
-        .send({ displayName: '笹木', description: '自己紹介' })
-        .expect(400, done)
+      postUserRequest({ displayName: '笹木', description: '自己紹介' }).expect(400, done)
     })
 
     it('displayName を省略した場合、400 エラーが返ってくる', done => {
-      request(app.getHttpServer())
-        .post('/users')
-        .send({ name: 'sasaki', description: '自己紹介' })
-        .expect(400, done)
+      postUserRequest({ name: 'sasaki', description: '自己紹介' }).expect(400, done)
     })
 
     describe('既存ユーザーがいる場合', () => {
@@ -91,10 +79,7 @@ describe('Users', () => {
         await repository.save(new User({ name: 'sasaki', displayName: '笹木', description: '自己紹介' }))
       })
       it('name が重複してる場合、 400 エラーが返ってくる', done => {
-        request(app.getHttpServer())
-          .post('/users')
-          .send({ name: 'sasaki', displayName: '笹木', description: '自己紹介' })
-          .expect(400, done)
+        postUserRequest({ name: 'sasaki', displayName: '笹木', description: '自己紹介' }).expect(400, done)
       })
     })
   })
