@@ -84,6 +84,56 @@ describe('Users', () => {
     })
   })
 
+  describe('PATCH /users/:id', () => {
+    const patchUserRequest = (id: number, params: object) => {
+      return request(app.getHttpServer()).patch(`/users/${id}`).send(params)
+    }
+    let user: User
+    beforeEach(async done => {
+      user = await repository.save(new User({ name: 'sasaki', displayName: '笹木', description: '自己紹介' }))
+      done()
+    })
+
+    it('displayName を指定することでユーザー情報を更新できる', done => {
+      patchUserRequest(user.id, { displayName: 'newDisplayName' })
+        .expect(200)
+        .expect(res => expect(res.body).toMatchObject({ displayName: 'newDisplayName' }))
+        .end(done)
+    })
+
+    it('description を指定することでユーザー情報を更新できる', done => {
+      patchUserRequest(user.id, { description: 'newDescription' })
+        .expect(200)
+        .expect(res => expect(res.body).toMatchObject({ description: 'newDescription' }))
+        .end(done)
+    })
+
+    it('name を変更しようとすると、200 は返ってくるが変更が反映されていない', done => {
+      patchUserRequest(user.id, { name: 'newName' })
+        .expect(200)
+        .expect(res => expect(res.body).not.toMatchObject({ name: 'newName' }))
+        .end(done)
+    })
+    it('存在しないユーザーの場合、404 エラーが返ってくる', done => {
+      patchUserRequest(0, { name: 'newName' }).expect(404, done)
+    })
+  })
+
+  describe('DELETE /users/:id', () => {
+    const deleteUserRequest = (id: number) => {
+      return request(app.getHttpServer()).delete(`/users/${id}`)
+    }
+    it('存在するユーザーの場合、200が返ってくる', async done => {
+      const user = await repository.save(
+        new User({ name: 'sasaki', displayName: '笹木', description: '自己紹介' })
+      )
+      deleteUserRequest(user.id).expect(200, done)
+    })
+    it('存在しないユーザーの場合、404 エラーが返ってくる', done => {
+      deleteUserRequest(0).expect(404, done)
+    })
+  })
+
   afterAll(async () => {
     await app.close()
   })
