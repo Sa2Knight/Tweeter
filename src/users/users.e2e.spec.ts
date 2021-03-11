@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core'
 import { AppModule } from '../app.module'
 import { createConnection, Repository } from 'typeorm'
 import { User } from '../entities/user.entity'
+import { Tweet } from '../entities/tweet.entity'
 
 describe('Users', () => {
   let app: INestApplication
@@ -25,7 +26,7 @@ describe('Users', () => {
       port: 3306,
       username: 'root',
       database: 'tweeter_test',
-      entities: [User],
+      entities: [User, Tweet],
       synchronize: true
     })
     repository = connection.getRepository(User)
@@ -35,7 +36,7 @@ describe('Users', () => {
   })
 
   beforeEach(async () => {
-    repository.clear()
+    repository.delete({})
   })
 
   describe('GET /users/:id', () => {

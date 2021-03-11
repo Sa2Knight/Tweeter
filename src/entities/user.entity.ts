@@ -1,4 +1,14 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, Unique } from 'typeorm'
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Unique,
+  OneToMany,
+  BaseEntity
+} from 'typeorm'
+import { Tweet } from './tweet.entity'
 
 @Entity()
 @Unique(['name'])
@@ -14,6 +24,9 @@ export class User {
 
   @Column()
   description!: string
+
+  @OneToMany(_ => Tweet, tweet => tweet.user)
+  tweets!: Tweet[]
 
   @CreateDateColumn()
   readonly createdAt!: Date
