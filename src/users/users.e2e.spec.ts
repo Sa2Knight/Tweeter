@@ -9,6 +9,13 @@ describe('Users', () => {
   let app: INestApplication
   let repository: Repository<User>
 
+  // FIXME: ファクトリが別にあると良いのかな
+  const createUser = (params?: object) => {
+    return repository.save(
+      new User({ name: 'name', displayName: 'displayName', description: 'description', ...params })
+    )
+  }
+
   beforeAll(async () => {
     // FIXME: 設定とコネクション生成を一元化
     const connection = await createConnection({
@@ -34,13 +41,12 @@ describe('Users', () => {
   describe('GET /users/:id', () => {
     const getUserRequest = (id: number) => request(app.getHttpServer()).get(`/users/${id}`)
 
-    it('存在するユーザーの場合、ユーザー情報が取得できる', async () => {
-      const savedUser = await repository.save(
-        new User({ name: 'sasaki', displayName: '笹木', description: '自己紹介' })
-      )
-      getUserRequest(savedUser.id)
+    it('存在するユーザーの場合、ユーザー情報が取得できる', async done => {
+      const user = await createUser()
+      getUserRequest(user.id)
         .expect(200)
-        .expect(res => expect(res.body).toMatchObject({ id: savedUser.id, name: 'sasaki' }))
+        .expect(res => expect(res.body).toMatchObject({ id: user.id, name: user.name }))
+        .end(done)
     })
 
     it('存在しないユーザーの場合、404 エラーが返ってくる', done => {
@@ -75,11 +81,9 @@ describe('Users', () => {
     })
 
     describe('既存ユーザーがいる場合', () => {
-      beforeEach(async () => {
-        await repository.save(new User({ name: 'sasaki', displayName: '笹木', description: '自己紹介' }))
-      })
-      it('name が重複してる場合、 400 エラーが返ってくる', done => {
-        postUserRequest({ name: 'sasaki', displayName: '笹木', description: '自己紹介' }).expect(400, done)
+      it('name が重複してる場合、 400 エラーが返ってくる', async done => {
+        const user = await createUser()
+        postUserRequest({ name: user.name, displayName: '笹木', description: '自己紹介' }).expect(400, done)
       })
     })
   })
@@ -89,10 +93,7 @@ describe('Users', () => {
       return request(app.getHttpServer()).patch(`/users/${id}`).send(params)
     }
     let user: User
-    beforeEach(async done => {
-      user = await repository.save(new User({ name: 'sasaki', displayName: '笹木', description: '自己紹介' }))
-      done()
-    })
+    beforeEach(async () => (user = await createUser()))
 
     it('displayName を指定することでユーザー情報を更新できる', done => {
       patchUserRequest(user.id, { displayName: 'newDisplayName' })
@@ -123,6 +124,9 @@ describe('Users', () => {
     const deleteUserRequest = (id: number) => {
       return request(app.getHttpServer()).delete(`/users/${id}`)
     }
+    let user: User
+    beforeEach(async () => (user = await createUser()))
+
     it('存在するユーザーの場合、200が返ってくる', async done => {
       const user = await repository.save(
         new User({ name: 'sasaki', displayName: '笹木', description: '自己紹介' })
