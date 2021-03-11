@@ -8,13 +8,15 @@ import { Tweet } from '../entities/tweet.entity'
 
 describe('Users', () => {
   let app: INestApplication
-  let repository: Repository<User>
 
   // FIXME: ファクトリが別にあると良いのかな
   const createUser = (params?: object) => {
-    return repository.save(
-      new User({ name: 'name', displayName: 'displayName', description: 'description', ...params })
-    )
+    return User.create({
+      name: 'name',
+      displayName: 'displayName',
+      description: 'description',
+      ...params
+    }).save()
   }
 
   beforeAll(async () => {
@@ -29,14 +31,13 @@ describe('Users', () => {
       entities: [User, Tweet],
       synchronize: true
     })
-    repository = connection.getRepository(User)
 
     app = await NestFactory.create(AppModule)
     await app.init()
   })
 
   beforeEach(async () => {
-    repository.delete({})
+    User.delete({})
   })
 
   describe('GET /users/:id', () => {
@@ -129,9 +130,6 @@ describe('Users', () => {
     beforeEach(async () => (user = await createUser()))
 
     it('存在するユーザーの場合、200が返ってくる', async done => {
-      const user = await repository.save(
-        new User({ name: 'sasaki', displayName: '笹木', description: '自己紹介' })
-      )
       deleteUserRequest(user.id).expect(200, done)
     })
     it('存在しないユーザーの場合、404 エラーが返ってくる', done => {

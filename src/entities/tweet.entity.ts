@@ -10,7 +10,7 @@ import {
 import { User } from './user.entity'
 
 @Entity()
-export class Tweet {
+export class Tweet extends BaseEntity {
   @PrimaryGeneratedColumn()
   readonly id!: number
 

@@ -12,7 +12,7 @@ import { Tweet } from './tweet.entity'
 
 @Entity()
 @Unique(['name'])
-export class User {
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   readonly id!: number
 
@@ -35,6 +35,7 @@ export class User {
   readonly updatedAt!: Date
 
   constructor(params: Partial<User>) {
+    super()
     Object.assign(this, params)
   }
 }

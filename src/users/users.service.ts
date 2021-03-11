@@ -4,13 +4,12 @@ import { User } from '../entities/user.entity'
 import { DeleteResult, Repository } from 'typeorm'
 import { CreateUserPropertyDto } from './createUserProperty.dto'
 import { UpdateUserPropertyDto } from './updateUserProperty.dto'
+import { request } from 'express'
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) private usersRepository: Repository<User>) {}
-
   async findOne(id: number): Promise<User> {
-    const user = await this.usersRepository.findOne(id)
+    const user = await User.findOne(id)
     if (user) {
       return user
     } else {
@@ -19,29 +18,28 @@ export class UsersService {
   }
 
   async create(userPropertyDto: CreateUserPropertyDto): Promise<User> {
-    const newUser = new User({
+    const newUser = User.create({
       name: userPropertyDto.name,
       displayName: userPropertyDto.displayName,
       description: userPropertyDto.description || ''
     })
 
-    return this.usersRepository.save(newUser).catch(e => {
+    return User.save(newUser).catch(e => {
       throw new BadRequestException('Failed to create user')
     })
   }
 
-  async update(id: number, userPropertyDto: UpdateUserPropertyDto): Promise<User> {
+  async update(id: number, userPropertyDto: UpdateUserPropertyDto) {
     const user = await this.findOne(id)
     user.displayName = userPropertyDto.displayName || user.displayName
     user.description = userPropertyDto.description || user.description
-
-    return this.usersRepository.save(user).catch(e => {
+    return user.save().catch(() => {
       throw new BadRequestException('Failed to update user')
     })
   }
 
-  async delete(id: number): Promise<DeleteResult> {
+  async delete(id: number): Promise<User> {
     const user = await this.findOne(id)
-    return this.usersRepository.delete(user.id)
+    return user.remove()
   }
 }
