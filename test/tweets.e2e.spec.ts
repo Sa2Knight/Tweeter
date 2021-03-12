@@ -1,51 +1,8 @@
-import * as request from 'supertest'
-import { INestApplication } from '@nestjs/common'
-import { NestFactory } from '@nestjs/core'
-import { AppModule } from '../src/app.module'
-import { createConnection, Repository } from 'typeorm'
-import { User } from '../src/entities/user.entity'
-import { Tweet } from '../src/entities/tweet.entity'
+import { test, createTweet, createUser } from './jest.setup'
 
 describe('Tweets', () => {
-  let app: INestApplication
-
-  // FIXME: ファクトリが別にあると良いのかな
-  const createUser = (params?: object) => {
-    return User.create({
-      name: `name_${Math.random()}`,
-      displayName: `displayName_${Math.random}`,
-      description: `description_${Math.random()}`,
-      ...params
-    }).save()
-  }
-
-  const createTweet = async (params?: object) => {
-    return Tweet.create({
-      user: await createUser(),
-      text: `text_${Math.random()}`,
-      ...params
-    }).save()
-  }
-
-  beforeAll(async () => {
-    // FIXME: 設定とコネクション生成を一元化
-    const connection = await createConnection({
-      name: 'test-connection',
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      database: 'tweeter_test',
-      entities: [User, Tweet],
-      synchronize: true
-    })
-
-    app = await NestFactory.create(AppModule)
-    await app.init()
-  })
-
   describe('POST /tweets', () => {
-    const postTweetRequest = (params: object) => request(app.getHttpServer()).post('/tweets').send(params)
+    const postTweetRequest = (params: object) => test().post('/tweets').send(params)
 
     it('userId, text を正しく指定した場合、作成したツイート情報が返ってくる', async done => {
       const tweetUser = await createUser()
@@ -70,7 +27,7 @@ describe('Tweets', () => {
   })
 
   describe('DELETE /tweets/:id', () => {
-    const deleteTweetRequest = (id: number) => request(app.getHttpServer()).delete(`/tweets/${id}`)
+    const deleteTweetRequest = (id: number) => test().delete(`/tweets/${id}`)
 
     it('存在するツイートの場合、200が返ってくる', async done => {
       const tweet = await createTweet()
@@ -80,10 +37,5 @@ describe('Tweets', () => {
     it('存在しないツイートの場合、404 エラーが返ってくる', done => {
       deleteTweetRequest(0).expect(404, done)
     })
-  })
-
-  afterAll(async () => {
-    await Tweet.delete({})
-    await User.delete({})
   })
 })

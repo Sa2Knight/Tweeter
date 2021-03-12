@@ -1,56 +1,10 @@
-import * as request from 'supertest'
-import { INestApplication } from '@nestjs/common'
-import { NestFactory } from '@nestjs/core'
-import { AppModule } from '../src/app.module'
-import { createConnection, Repository } from 'typeorm'
-import { User } from '../src/entities/user.entity'
 import { Tweet } from '../src/entities/tweet.entity'
+import { User } from '../src/entities/user.entity'
+import { test, createTweet, createUser } from './jest.setup'
 
 describe('Users', () => {
-  let app: INestApplication
-
-  // FIXME: ファクトリが別にあると良いのかな
-  const createUser = async (params?: object) => {
-    return User.create({
-      name: `name_${Math.random()}`,
-      displayName: `displayName_${Math.random}`,
-      description: `description_${Math.random()}`,
-      ...params
-    }).save()
-  }
-
-  const createTweet = async (params?: object) => {
-    return Tweet.create({
-      user: await createUser(),
-      text: `text_${Math.random()}`,
-      ...params
-    }).save()
-  }
-
-  beforeAll(async () => {
-    // FIXME: 設定とコネクション生成を一元化
-    const connection = await createConnection({
-      name: 'test-connection',
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      database: 'tweeter_test',
-      entities: [User, Tweet],
-      synchronize: true
-    })
-
-    app = await NestFactory.create(AppModule)
-    await app.init()
-  })
-
-  afterEach(async () => {
-    await Tweet.delete({})
-    await User.delete({})
-  })
-
   describe('GET /users/:id', () => {
-    const getUserRequest = (id: number) => request(app.getHttpServer()).get(`/users/${id}`)
+    const getUserRequest = (id: number) => test().get(`/users/${id}`)
 
     it('存在するユーザーの場合、ユーザー情報が取得できる', async done => {
       const user = await createUser()
@@ -66,7 +20,7 @@ describe('Users', () => {
   })
 
   describe('POST /users', () => {
-    const postUserRequest = (params: object) => request(app.getHttpServer()).post('/users').send(params)
+    const postUserRequest = (params: object) => test().post('/users').send(params)
 
     it('name, displayName, description を正しく指定した場合、作成したユーザーが返ってくる', done => {
       const params = { name: 'sasaki', displayName: '笹木', description: '自己紹介' }
@@ -102,8 +56,7 @@ describe('Users', () => {
   describe('PATCH /users/:id', () => {
     let user: User
     beforeEach(async () => (user = await createUser()))
-    const patchUserRequest = (id: number, params: object) =>
-      request(app.getHttpServer()).patch(`/users/${id}`).send(params)
+    const patchUserRequest = (id: number, params: object) => test().patch(`/users/${id}`).send(params)
 
     it('displayName を指定することでユーザー情報を更新できる', done => {
       patchUserRequest(user.id, { displayName: 'newDisplayName' })
@@ -133,7 +86,7 @@ describe('Users', () => {
   describe('DELETE /users/:id', () => {
     let user: User
     beforeEach(async () => (user = await createUser()))
-    const deleteUserRequest = (id: number) => request(app.getHttpServer()).delete(`/users/${id}`)
+    const deleteUserRequest = (id: number) => test().delete(`/users/${id}`)
 
     it('存在するユーザーの場合、200が返ってきて、ユーザーが削除されている', async done => {
       deleteUserRequest(user.id)
@@ -159,9 +112,5 @@ describe('Users', () => {
     it('存在しないユーザーの場合、404 エラーが返ってくる', done => {
       deleteUserRequest(0).expect(404, done)
     })
-  })
-
-  afterAll(async () => {
-    await app.close()
   })
 })
