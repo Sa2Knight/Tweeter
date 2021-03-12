@@ -24,7 +24,7 @@ beforeAll(async () => {
   await app.init()
 })
 
-afterEach(async () => {
+beforeEach(async () => {
   await Tweet.delete({})
   await User.delete({})
 })
