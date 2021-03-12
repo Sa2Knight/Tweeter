@@ -1,10 +1,10 @@
 import * as request from 'supertest'
 import { INestApplication } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
-import { AppModule } from '../app.module'
+import { AppModule } from '../src/app.module'
 import { createConnection, Repository } from 'typeorm'
-import { User } from '../entities/user.entity'
-import { Tweet } from '../entities/tweet.entity'
+import { User } from '../src/entities/user.entity'
+import { Tweet } from '../src/entities/tweet.entity'
 
 describe('Tweets', () => {
   let app: INestApplication
