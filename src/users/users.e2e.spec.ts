@@ -44,8 +44,9 @@ describe('Users', () => {
     await app.init()
   })
 
-  beforeEach(async () => {
-    User.delete({})
+  afterEach(async () => {
+    await Tweet.delete({})
+    await User.delete({})
   })
 
   describe('GET /users/:id', () => {

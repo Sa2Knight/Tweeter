@@ -10,7 +10,7 @@ describe('Tweets', () => {
   let app: INestApplication
 
   // FIXME: ファクトリが別にあると良いのかな
-  const createUser = async (params?: object) => {
+  const createUser = (params?: object) => {
     return User.create({
       name: `name_${Math.random()}`,
       displayName: `displayName_${Math.random}`,
@@ -44,11 +44,6 @@ describe('Tweets', () => {
     await app.init()
   })
 
-  beforeEach(async () => {
-    await Tweet.delete({})
-    await User.delete({})
-  })
-
   describe('POST /tweets', () => {
     const postTweetRequest = (params: object) => request(app.getHttpServer()).post('/tweets').send(params)
 
@@ -65,12 +60,12 @@ describe('Tweets', () => {
     })
 
     it('userId に存在しないユーザーを指定した場合、 404 エラーが返ってくる', done => {
-      postTweetRequest({ userId: 0, text: 'こんにちは' }).expect(404, done)
+      postTweetRequest({ userId: 0, text: 'こんにちは' }).expect(404).end(done)
     })
 
     it('text を省略した場合、 400 エラーが返ってくる', async done => {
       const tweetUser = await createUser()
-      postTweetRequest({ userId: tweetUser.id }).expect(400, done)
+      postTweetRequest({ userId: tweetUser.id }).expect(400).end(done)
     })
   })
 
@@ -88,6 +83,7 @@ describe('Tweets', () => {
   })
 
   afterAll(async () => {
-    await app.close()
+    await Tweet.delete({})
+    await User.delete({})
   })
 })
