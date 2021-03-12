@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, Delete, Param, ParseIntPipe, Post, UsePipes, ValidationPipe } from '@nestjs/common'
 import { CreateTweetPropertyDto } from './createTweetProperty.dto'
 import { TweetService } from './tweet.service'
 
@@ -10,5 +10,10 @@ export class TweetController {
   @UsePipes(ValidationPipe)
   createTweet(@Body() tweetPropertyDto: CreateTweetPropertyDto) {
     return this.tweetService.create(tweetPropertyDto)
+  }
+
+  @Delete('/:id')
+  deleteTweet(@Param('id', ParseIntPipe) id: number) {
+    return this.tweetService.delete(id).then(() => ({ result: 'success' }))
   }
 }

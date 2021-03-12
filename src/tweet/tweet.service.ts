@@ -14,4 +14,11 @@ export class TweetService {
       throw new BadRequestException('Failed to create Tweet')
     })
   }
+
+  async delete(id: number): Promise<Tweet> {
+    const tweet = await Tweet.findOneOrFail(id).catch(e => {
+      throw new NotFoundException('Tweet not found')
+    })
+    return tweet.remove()
+  }
 }

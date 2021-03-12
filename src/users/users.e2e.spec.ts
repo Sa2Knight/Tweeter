@@ -10,11 +10,19 @@ describe('Users', () => {
   let app: INestApplication
 
   // FIXME: ファクトリが別にあると良いのかな
-  const createUser = (params?: object) => {
+  const createUser = async (params?: object) => {
     return User.create({
-      name: 'name',
-      displayName: 'displayName',
-      description: 'description',
+      name: `name_${Math.random()}`,
+      displayName: `displayName_${Math.random}`,
+      description: `description_${Math.random()}`,
+      ...params
+    }).save()
+  }
+
+  const createTweet = async (params?: object) => {
+    return Tweet.create({
+      user: await createUser(),
+      text: `text_${Math.random()}`,
       ...params
     }).save()
   }
@@ -91,11 +99,10 @@ describe('Users', () => {
   })
 
   describe('PATCH /users/:id', () => {
-    const patchUserRequest = (id: number, params: object) => {
-      return request(app.getHttpServer()).patch(`/users/${id}`).send(params)
-    }
     let user: User
     beforeEach(async () => (user = await createUser()))
+    const patchUserRequest = (id: number, params: object) =>
+      request(app.getHttpServer()).patch(`/users/${id}`).send(params)
 
     it('displayName を指定することでユーザー情報を更新できる', done => {
       patchUserRequest(user.id, { displayName: 'newDisplayName' })
@@ -123,15 +130,16 @@ describe('Users', () => {
   })
 
   describe('DELETE /users/:id', () => {
-    const deleteUserRequest = (id: number) => {
-      return request(app.getHttpServer()).delete(`/users/${id}`)
-    }
     let user: User
     beforeEach(async () => (user = await createUser()))
+    const deleteUserRequest = (id: number) => request(app.getHttpServer()).delete(`/users/${id}`)
 
     it('存在するユーザーの場合、200が返ってくる', async done => {
       deleteUserRequest(user.id).expect(200, done)
     })
+
+    it('存在するユーザが、ツイートも行っている場合', () => {})
+
     it('存在しないユーザーの場合、404 エラーが返ってくる', done => {
       deleteUserRequest(0).expect(404, done)
     })
