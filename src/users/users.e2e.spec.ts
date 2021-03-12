@@ -134,11 +134,26 @@ describe('Users', () => {
     beforeEach(async () => (user = await createUser()))
     const deleteUserRequest = (id: number) => request(app.getHttpServer()).delete(`/users/${id}`)
 
-    it('存在するユーザーの場合、200が返ってくる', async done => {
-      deleteUserRequest(user.id).expect(200, done)
+    it('存在するユーザーの場合、200が返ってきて、ユーザーが削除されている', async done => {
+      deleteUserRequest(user.id)
+        .expect(200)
+        .expect(async _ => {
+          const result = await User.findOne(user.id)
+          expect(result).toBeUndefined()
+        })
+        .end(done)
     })
 
-    it('存在するユーザが、ツイートも行っている場合', () => {})
+    it('存在するユーザが、ツイートも行っている場合、ツイートも削除される', async done => {
+      const tweet = await createTweet({ user })
+      deleteUserRequest(user.id)
+        .expect(200)
+        .expect(async _ => {
+          const result = await Tweet.findOne(tweet.id)
+          expect(result).toBeUndefined()
+        })
+        .end(done)
+    })
 
     it('存在しないユーザーの場合、404 エラーが返ってくる', done => {
       deleteUserRequest(0).expect(404, done)

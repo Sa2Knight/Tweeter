@@ -17,7 +17,7 @@ export class Tweet extends BaseEntity {
   @Column()
   text!: string
 
-  @ManyToOne(_ => User, user => user.tweets)
+  @ManyToOne(_ => User, user => user.tweets, { onDelete: 'CASCADE' })
   user!: User
 
   @CreateDateColumn()
