@@ -17,6 +17,10 @@ export class UsersService {
     }
   }
 
+  async findByName(name: string): Promise<User | undefined> {
+    return await User.findOne({ name })
+  }
+
   async create(userPropertyDto: CreateUserPropertyDto): Promise<User> {
     const newUser = User.create({
       name: userPropertyDto.name,
