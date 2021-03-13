@@ -67,10 +67,9 @@ export const createUser = (params?: object) => {
   }).save()
 }
 
-export const createTweet = async (params?: object) => {
+export const createTweet = async (params?: any) => {
   return Tweet.create({
-    user: await createUser(),
-    text: `text_${Math.random()}`,
-    ...params
+    user: params.user || (await createUser()),
+    text: params.text || `text_${Math.random()}`
   }).save()
 }

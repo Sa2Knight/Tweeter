@@ -1,4 +1,14 @@
-import { Body, Delete, Param, Patch, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
+import {
+  Body,
+  Delete,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+  Request
+} from '@nestjs/common'
 import { Controller, Get, ParseIntPipe } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { CreateUserPropertyDto } from './createUserProperty.dto'
@@ -20,14 +30,16 @@ export class UsersController {
     return this.usersService.create(userPropertyDto)
   }
 
-  @Patch('/:id')
+  @Patch()
+  @UseGuards(AuthGuard('jwt'))
   @UsePipes(ValidationPipe)
-  updateUser(@Param('id', ParseIntPipe) id: number, @Body() userPropertyDto: UpdateUserPropertyDto) {
-    return this.usersService.update(id, userPropertyDto)
+  updateUser(@Request() req: any, @Body() userPropertyDto: UpdateUserPropertyDto) {
+    return this.usersService.update(req.user.id, userPropertyDto)
   }
 
-  @Delete('/:id')
-  deleteUser(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.delete(id).then(() => ({ result: 'success' }))
+  @Delete()
+  @UseGuards(AuthGuard('jwt'))
+  deleteUser(@Request() req: any) {
+    return this.usersService.delete(req.user.id).then(() => ({ result: 'success' }))
   }
 }
