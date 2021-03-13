@@ -3,10 +3,6 @@ import { test, createTweet, createUser, login } from './jest.setup'
 
 describe('Tweets', () => {
   describe('POST /tweets', () => {
-    it('ログインしていない場合、401 エラーが返ってくる', done => {
-      test('POST', '/tweets').send({ text: 'ログインしてないけどツイートさせてくれ' }).expect(401).end(done)
-    })
-
     it('userId, text を正しく指定した場合、作成したツイート情報が返ってくる', async done => {
       const currentUser = await createUser()
       await login(currentUser)
@@ -34,10 +30,6 @@ describe('DELETE /tweets/:id', () => {
 
   beforeEach(async () => {
     targetTweet = await createTweet()
-  })
-
-  it('ログインしていない場合、401 エラーが返ってくる', async done => {
-    test('DELETE', `/tweets/${targetTweet.id}`).expect(401, done)
   })
 
   it('ログイン中ユーザーのツイートの場合、200が返ってくる', async done => {
