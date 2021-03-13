@@ -5,18 +5,15 @@ import { CreateTweetPropertyDto } from './createTweetProperty.dto'
 
 @Injectable()
 export class TweetService {
-  async create(tweetPropertyDto: CreateTweetPropertyDto): Promise<Tweet> {
-    const user = await User.findOneOrFail(tweetPropertyDto.userId).catch(e => {
-      throw new NotFoundException('User not found')
-    })
+  async create(user: User, tweetPropertyDto: CreateTweetPropertyDto): Promise<Tweet> {
     const newTweet = Tweet.create({ user: user, text: tweetPropertyDto.text })
     return Tweet.save(newTweet).catch(e => {
       throw new BadRequestException('Failed to create Tweet')
     })
   }
 
-  async delete(id: number): Promise<Tweet> {
-    const tweet = await Tweet.findOneOrFail(id).catch(e => {
+  async delete(user: User, id: number): Promise<Tweet> {
+    const tweet = await Tweet.findOneOrFail({ id, user }).catch(e => {
       throw new NotFoundException('Tweet not found')
     })
     return tweet.remove()

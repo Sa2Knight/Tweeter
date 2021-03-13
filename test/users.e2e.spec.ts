@@ -4,7 +4,7 @@ import { test, createTweet, createUser } from './jest.setup'
 
 describe('Users', () => {
   describe('GET /users/:id', () => {
-    const getUserRequest = (id: number) => test().get(`/users/${id}`)
+    const getUserRequest = (id: number) => test('GET', `/users/${id}`)
 
     it('存在するユーザーの場合、ユーザー情報が取得できる', async done => {
       const user = await createUser()
@@ -20,7 +20,7 @@ describe('Users', () => {
   })
 
   describe('POST /users', () => {
-    const postUserRequest = (params: object) => test().post('/users').send(params)
+    const postUserRequest = (params: object) => test('POST', '/users').send(params)
 
     it('name, displayName, description を正しく指定した場合、作成したユーザーが返ってくる', done => {
       const params = { name: 'sasaki', displayName: '笹木', description: '自己紹介' }
@@ -56,7 +56,7 @@ describe('Users', () => {
   describe('PATCH /users/:id', () => {
     let user: User
     beforeEach(async () => (user = await createUser()))
-    const patchUserRequest = (id: number, params: object) => test().patch(`/users/${id}`).send(params)
+    const patchUserRequest = (id: number, params: object) => test('PATCH', `/users/${id}`).send(params)
 
     it('displayName を指定することでユーザー情報を更新できる', done => {
       patchUserRequest(user.id, { displayName: 'newDisplayName' })
@@ -86,7 +86,7 @@ describe('Users', () => {
   describe('DELETE /users/:id', () => {
     let user: User
     beforeEach(async () => (user = await createUser()))
-    const deleteUserRequest = (id: number) => test().delete(`/users/${id}`)
+    const deleteUserRequest = (id: number) => test('DELETE', `/users/${id}`)
 
     it('存在するユーザーの場合、200が返ってきて、ユーザーが削除されている', async done => {
       deleteUserRequest(user.id)

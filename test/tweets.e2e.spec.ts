@@ -1,41 +1,52 @@
-import { test, createTweet, createUser } from './jest.setup'
+import { Tweet } from '../src/entities/tweet.entity'
+import { test, createTweet, createUser, login } from './jest.setup'
 
 describe('Tweets', () => {
   describe('POST /tweets', () => {
-    const postTweetRequest = (params: object) => test().post('/tweets').send(params)
+    it('ログインしていない場合、401 エラーが返ってくる', done => {
+      test('POST', '/tweets').send({ text: 'ログインしてないけどツイートさせてくれ' }).expect(401).end(done)
+    })
 
     it('userId, text を正しく指定した場合、作成したツイート情報が返ってくる', async done => {
-      const tweetUser = await createUser()
+      const currentUser = await createUser()
+      await login(currentUser)
 
-      postTweetRequest({ userId: tweetUser.id, text: 'こんにちは' })
+      test('POST', '/tweets')
+        .send({ text: 'こんにちは' })
         .expect(201)
         .expect(res => {
           expect(res.body.text).toBe('こんにちは')
-          expect(res.body.user).toMatchObject({ id: tweetUser.id, name: tweetUser.name })
+          expect(res.body.user).toMatchObject({ id: currentUser.id, name: currentUser.name })
         })
         .end(done)
     })
-
-    it('userId に存在しないユーザーを指定した場合、 404 エラーが返ってくる', done => {
-      postTweetRequest({ userId: 0, text: 'こんにちは' }).expect(404).end(done)
-    })
-
-    it('text を省略した場合、 400 エラーが返ってくる', async done => {
-      const tweetUser = await createUser()
-      postTweetRequest({ userId: tweetUser.id }).expect(400).end(done)
-    })
   })
 
-  describe('DELETE /tweets/:id', () => {
-    const deleteTweetRequest = (id: number) => test().delete(`/tweets/${id}`)
+  it('text を省略した場合、 400 エラーが返ってくる', async done => {
+    const currentUser = await createUser()
+    await login(currentUser)
+    test('POST', '/tweets').expect(400).end(done)
+  })
+})
 
-    it('存在するツイートの場合、200が返ってくる', async done => {
-      const tweet = await createTweet()
-      deleteTweetRequest(tweet.id).expect(200, done)
-    })
+describe('DELETE /tweets/:id', () => {
+  let targetTweet: Tweet
 
-    it('存在しないツイートの場合、404 エラーが返ってくる', done => {
-      deleteTweetRequest(0).expect(404, done)
-    })
+  beforeEach(async () => {
+    targetTweet = await createTweet()
+  })
+
+  it('ログインしていない場合、401 エラーが返ってくる', async done => {
+    test('DELETE', `/tweets/${targetTweet.id}`).expect(401, done)
+  })
+
+  it('ログイン中ユーザーのツイートの場合、200が返ってくる', async done => {
+    await login(targetTweet.user)
+    test('DELETE', `/tweets/${targetTweet.id}`).expect(200, done)
+  })
+
+  it('ログイン中ユーザーのツイートでない場合、404 エラーが返ってくる', async done => {
+    await login(await createUser())
+    test('DELETE', `/tweets/0`).expect(404, done)
   })
 })

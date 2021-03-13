@@ -4,7 +4,8 @@ import { User } from '../src/entities/user.entity'
 import { Connection, createConnection, Repository } from 'typeorm'
 import { AppModule } from '../src/app.module'
 import { NestFactory } from '@nestjs/core'
-import * as request from 'supertest'
+import supertest, * as request from 'supertest'
+import { access } from 'node:fs'
 
 let app: INestApplication
 let dbConnection: Connection
@@ -25,6 +26,7 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
+  logout()
   await Tweet.delete({})
   await User.delete({})
 })
@@ -34,7 +36,27 @@ afterAll(async () => {
   if (dbConnection) await dbConnection.close()
 })
 
-export const test = () => request(app.getHttpServer())
+type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE'
+let accessToken: string | null
+
+export const req = () => request(app.getHttpServer())
+export const test = (method: Method, url: string) => {
+  switch (method) {
+    case 'GET':
+      return req().get(url).set('Authorization', `Bearer ${accessToken}`)
+    case 'POST':
+      return req().post(url).set('Authorization', `Bearer ${accessToken}`)
+    case 'PATCH':
+      return req().patch(url).set('Authorization', `Bearer ${accessToken}`)
+    case 'DELETE':
+      return req().delete(url).set('Authorization', `Bearer ${accessToken}`)
+  }
+}
+export const logout = () => (accessToken = null)
+export const login = async (user: User) => {
+  const res = await test('POST', '/login').send({ username: user.name, password: user.password })
+  accessToken = res.body.access_token
+}
 
 export const createUser = (params?: object) => {
   return User.create({
