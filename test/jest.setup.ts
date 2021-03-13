@@ -30,8 +30,8 @@ beforeEach(async () => {
 })
 
 afterAll(async () => {
-  await app.close()
-  await dbConnection.close()
+  if (app) await app.close()
+  if (dbConnection) await dbConnection.close()
 })
 
 export const test = () => request(app.getHttpServer())

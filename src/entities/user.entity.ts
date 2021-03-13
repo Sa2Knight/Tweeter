@@ -37,8 +37,11 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
   readonly updatedAt!: Date
 
-  constructor(params: Partial<User>) {
+  constructor(params: { name: string; displayName: string; description?: string }) {
     super()
-    Object.assign(this, params)
+    Object.assign(this, {
+      password: '1q2w3e4r5t6y',
+      ...params
+    })
   }
 }
