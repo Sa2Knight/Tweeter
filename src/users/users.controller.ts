@@ -1,5 +1,6 @@
-import { Body, Delete, Param, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Delete, Param, Patch, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { Controller, Get, ParseIntPipe } from '@nestjs/common'
+import { AuthGuard } from '@nestjs/passport'
 import { CreateUserPropertyDto } from './createUserProperty.dto'
 import { UpdateUserPropertyDto } from './updateUserProperty.dto'
 import { UsersService } from './users.service'

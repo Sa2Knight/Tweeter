@@ -25,6 +25,9 @@ export class User extends BaseEntity {
   @Column()
   description!: string
 
+  @Column()
+  password!: string
+
   @OneToMany(_ => Tweet, tweet => tweet.user)
   tweets!: Tweet[]
 

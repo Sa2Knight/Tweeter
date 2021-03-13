@@ -7,6 +7,7 @@ import { User } from './entities/user.entity'
 import { UsersModule } from './users/users.module'
 import { TweetController } from './tweet/tweet.controller';
 import { TweetService } from './tweet/tweet.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { TweetService } from './tweet/tweet.service';
       entities: [User, Tweet],
       synchronize: true
     }),
-    UsersModule
+    UsersModule,
+    AuthModule
   ],
   controllers: [AppController, TweetController],
   providers: [AppService, TweetService]
