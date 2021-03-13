@@ -20,6 +20,7 @@ export class UsersService {
   async create(userPropertyDto: CreateUserPropertyDto): Promise<User> {
     const newUser = User.create({
       name: userPropertyDto.name,
+      password: '1q2w3e4r5t6y',
       displayName: userPropertyDto.displayName,
       description: userPropertyDto.description || ''
     })
