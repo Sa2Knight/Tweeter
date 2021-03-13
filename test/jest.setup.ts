@@ -20,7 +20,7 @@ beforeAll(async () => {
     entities: [User, Tweet],
     synchronize: true
   })
-  app = await NestFactory.create(AppModule)
+  app = await NestFactory.create(AppModule, { logger: false })
   await app.init()
 })
 
