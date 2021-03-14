@@ -11,6 +11,8 @@ import { AuthModule } from './auth/auth.module'
 import { Followings } from './entities/followings.entity'
 import { FollowingsController } from './followings/followings.controller';
 import { FollowingsService } from './followings/followings.service';
+import { BookmarkController } from './bookmark/bookmark.controller';
+import { BookmarkService } from './bookmark/bookmark.service';
 
 @Module({
   imports: [
@@ -26,7 +28,7 @@ import { FollowingsService } from './followings/followings.service';
     UsersModule,
     AuthModule
   ],
-  controllers: [AppController, TweetController, FollowingsController],
-  providers: [AppService, TweetService, FollowingsService]
+  controllers: [AppController, TweetController, FollowingsController, BookmarkController],
+  providers: [AppService, TweetService, FollowingsService, BookmarkService]
 })
 export class AppModule {}
