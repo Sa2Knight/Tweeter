@@ -1,5 +1,5 @@
-import { Tweet } from '../src/entities/tweet.entity'
-import { test, createTweet, createUser, login } from './jest.setup'
+import { Tweet } from 'src/entities/tweet.entity'
+import { test, createTweet, createUser, login } from 'test/jest.setup'
 
 describe('Tweets', () => {
   describe('POST /tweets', () => {

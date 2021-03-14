@@ -59,8 +59,8 @@
       "json",
       "ts"
     ],
-    "rootDir": "test",
-    "testRegex": ".*\\.spec\\.ts$",
+    "modulePaths": ["<rootDir>"],
+    "testRegex": "test/.*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
@@ -70,7 +70,7 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "setupFilesAfterEnv": [
-      "./jest.setup.ts"
+      "<rootDir>/test/jest.setup.ts"
     ]
   },
   "prettier": {

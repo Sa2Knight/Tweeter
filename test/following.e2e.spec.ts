@@ -1,6 +1,6 @@
-import { Followings } from '../src/entities/followings.entity'
-import { User } from '../src/entities/user.entity'
-import { createUser, login, test } from './jest.setup'
+import { Followings } from 'src/entities/followings.entity'
+import { User } from 'src/entities/user.entity'
+import { createUser, login, test } from 'test/jest.setup'
 
 describe('Followings', () => {
   describe('POST /followings', () => {

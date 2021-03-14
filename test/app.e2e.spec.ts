@@ -1,4 +1,4 @@
-import { test, createUser, createTweet } from './jest.setup'
+import { test, createUser, createTweet } from 'test/jest.setup'
 
 describe('App', () => {
   describe('POST /login', () => {
