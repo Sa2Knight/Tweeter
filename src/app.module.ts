@@ -9,6 +9,8 @@ import { TweetController } from './tweet/tweet.controller'
 import { TweetService } from './tweet/tweet.service'
 import { AuthModule } from './auth/auth.module'
 import { Followings } from './entities/followings.entity'
+import { FollowingsController } from './followings/followings.controller';
+import { FollowingsService } from './followings/followings.service';
 
 @Module({
   imports: [
@@ -24,7 +26,7 @@ import { Followings } from './entities/followings.entity'
     UsersModule,
     AuthModule
   ],
-  controllers: [AppController, TweetController],
-  providers: [AppService, TweetService]
+  controllers: [AppController, TweetController, FollowingsController],
+  providers: [AppService, TweetService, FollowingsService]
 })
 export class AppModule {}

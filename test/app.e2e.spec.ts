@@ -52,7 +52,7 @@ describe('App', () => {
 
       it('POST /followings', async done => {
         const targetUser = await createUser()
-        test('POST', '/followings').send({ userId: targetUser.id }).expect(200).end(done)
+        test('POST', '/followings').send({ userId: targetUser.id }).expect(401).end(done)
       })
     })
   })

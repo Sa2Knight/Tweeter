@@ -6,10 +6,12 @@ describe('Followings', () => {
   describe('POST /followings', () => {
     const postFollowingRequest = (user: User) => test('POST', '/followings').send({ userId: user.id })
 
-    it('200: フォローしていない自分以外のユーザーを指定した場合', async done => {
+    it('201: フォローしていない自分以外のユーザーを指定した場合', async done => {
       await login(await createUser())
 
-      postFollowingRequest(await createUser()).expect(200, done)
+      postFollowingRequest(await createUser())
+        .expect(201)
+        .end(done)
     })
 
     it('400: フォロー済みの自分以外のユーザーを指定した場合', async done => {
@@ -18,8 +20,7 @@ describe('Followings', () => {
       await login(currentUser)
       const f = await Followings.create({ fromUser: currentUser, toUser: targetUser }).save()
 
-      console.log(f)
-      postFollowingRequest(await createUser()).expect(400, done)
+      postFollowingRequest(targetUser).expect(400, done)
     })
 
     it('400: 自分自身を指定した場合', async done => {
@@ -30,8 +31,17 @@ describe('Followings', () => {
     })
 
     it('400: ユーザーを指定しなかった場合', async done => {
-      expect(true).toEqual(false)
-      done()
+      const currentUser = await createUser()
+      await login(currentUser)
+
+      test('POST', '/followings').send({}).expect(400, done)
+    })
+
+    it('404: 存在しないユーザーを指定した場合', async done => {
+      const currentUser = await createUser()
+      await login(currentUser)
+
+      test('POST', '/followings').send({ userId: 0 }).expect(404, done)
     })
   })
 })

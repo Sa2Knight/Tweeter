@@ -27,6 +27,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   logout()
+  await Followings.delete({})
   await Tweet.delete({})
   await User.delete({})
 })
