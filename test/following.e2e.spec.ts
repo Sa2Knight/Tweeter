@@ -44,4 +44,31 @@ describe('Followings', () => {
       test('POST', '/followings').send({ userId: 0 }).expect(404, done)
     })
   })
+
+  describe('DELETE /followings', () => {
+    const deleteFollowingRequest = (user: User) => test('DELETE', '/followings').send({ userId: user.id })
+
+    let currentUser: User
+    beforeEach(async () => {
+      currentUser = await createUser()
+      await login(currentUser)
+    })
+
+    it('200: フォローしているユーザを指定した場合', async done => {
+      const targetUser = await createUser()
+      await Followings.create({ fromUser: currentUser, toUser: targetUser }).save()
+
+      deleteFollowingRequest(targetUser).expect(200).end(done)
+    })
+
+    it('404: フォローしていないユーザを指定した場合', async done => {
+      const targetUser = await createUser()
+
+      deleteFollowingRequest(targetUser).expect(200).end(done)
+    })
+
+    it('400: ユーザーを指定しなかった場合', async done => {
+      test('DELETE', '/followings').send({}).expect(400).end(done)
+    })
+  })
 })

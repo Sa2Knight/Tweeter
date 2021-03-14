@@ -54,6 +54,11 @@ describe('App', () => {
         const targetUser = await createUser()
         test('POST', '/followings').send({ userId: targetUser.id }).expect(401).end(done)
       })
+
+      it('DELETE /followings', async done => {
+        const targetUser = await createUser()
+        test('DELETE', '/followings').send({ userId: targetUser.id }).expect(401).end(done)
+      })
     })
   })
 })
