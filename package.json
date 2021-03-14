@@ -11,7 +11,7 @@
     "start:dev": "NODE_ENV=development nest start --watch",
     "start:debug": "NODE_ENV=development nest start --debug --watch",
     "eslint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
-    "test": "yarn jest --maxWorkers=1"
+    "test": "NODE_ENV=test yarn jest --maxWorkers=1"
   },
   "dependencies": {
     "@nestjs/common": "^7.6.13",

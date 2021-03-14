@@ -9,19 +9,8 @@ import * as request from 'supertest'
 import { Bookmark } from 'src/entities/bookmark.entity'
 
 let app: INestApplication
-let dbConnection: Connection
 
 beforeAll(async () => {
-  dbConnection = await createConnection({
-    name: 'test-connection',
-    type: 'mysql',
-    host: 'localhost',
-    port: 3306,
-    username: 'root',
-    database: 'tweeter_test',
-    entities: [User, Tweet, Followings, Bookmark],
-    synchronize: true
-  })
   app = await NestFactory.create(AppModule, { logger: false })
   await app.init()
 })
@@ -37,7 +26,6 @@ beforeEach(async () => {
 
 afterAll(async () => {
   if (app) await app.close()
-  if (dbConnection) await dbConnection.close()
 })
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE'
