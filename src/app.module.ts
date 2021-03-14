@@ -5,9 +5,10 @@ import { AppService } from './app.service'
 import { Tweet } from './entities/tweet.entity'
 import { User } from './entities/user.entity'
 import { UsersModule } from './users/users.module'
-import { TweetController } from './tweet/tweet.controller';
-import { TweetService } from './tweet/tweet.service';
-import { AuthModule } from './auth/auth.module';
+import { TweetController } from './tweet/tweet.controller'
+import { TweetService } from './tweet/tweet.service'
+import { AuthModule } from './auth/auth.module'
+import { Followings } from './entities/followings.entity'
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { AuthModule } from './auth/auth.module';
       port: 3306,
       username: 'root',
       database: `tweeter_${process.env.NODE_ENV}`,
-      entities: [User, Tweet],
+      entities: [User, Tweet, Followings],
       synchronize: true
     }),
     UsersModule,

@@ -4,8 +4,8 @@ import { User } from '../src/entities/user.entity'
 import { Connection, createConnection, Repository } from 'typeorm'
 import { AppModule } from '../src/app.module'
 import { NestFactory } from '@nestjs/core'
-import supertest, * as request from 'supertest'
-import { access } from 'node:fs'
+import { Followings } from '../src/entities/followings.entity'
+import * as request from 'supertest'
 
 let app: INestApplication
 let dbConnection: Connection
@@ -18,7 +18,7 @@ beforeAll(async () => {
     port: 3306,
     username: 'root',
     database: 'tweeter_test',
-    entities: [User, Tweet],
+    entities: [User, Tweet, Followings],
     synchronize: true
   })
   app = await NestFactory.create(AppModule, { logger: false })
@@ -61,7 +61,7 @@ export const login = async (user: User) => {
 export const createUser = (params?: object) => {
   return User.create({
     name: `name_${Math.random()}`,
-    displayName: `displayName_${Math.random}`,
+    displayName: `displayName_${Math.random()}`,
     description: `description_${Math.random()}`,
     ...params
   }).save()

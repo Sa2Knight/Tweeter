@@ -22,32 +22,37 @@ describe('App', () => {
 
   describe('各エンドポイントの認証の必要性チェック', () => {
     describe('認証不要', () => {
-      it('GET /users/:id', async () => {
+      it('GET /users/:id', async done => {
         const user = await createUser()
-        test('GET', `/users/${user.id}`).expect(200)
+        test('GET', `/users/${user.id}`).expect(200).end(done)
       })
 
-      it('POST /users/', async () => {
-        test('POST', `/users`).send({ name: 'name', displayName: 'displayName' }).expect(201)
+      it('POST /users/', async done => {
+        test('POST', `/users`).send({ name: 'name', displayName: 'displayName' }).expect(201).end(done)
       })
     })
 
     describe('認証必要', () => {
-      it('PATCH /users', () => {
-        test('PATCH', '/users').expect(401)
+      it('PATCH /users', done => {
+        test('PATCH', '/users').expect(401, done)
       })
 
-      it('DELETE /users', () => {
-        test('DELETE', '/users').expect(401)
+      it('DELETE /users', done => {
+        test('DELETE', '/users').expect(401, done)
       })
 
-      it('POST /tweets', () => {
-        test('POST', '/tweets').expect(401)
+      it('POST /tweets', done => {
+        test('POST', '/tweets').expect(401, done)
       })
 
-      it('DELETE /tweets/:id', async () => {
+      it('DELETE /tweets/:id', async done => {
         const tweet = await createTweet()
-        test('DELETE', `/tweets/${tweet.id}`).expect(401)
+        test('DELETE', `/tweets/${tweet.id}`).expect(401, done)
+      })
+
+      it('POST /followings', async done => {
+        const targetUser = await createUser()
+        test('POST', '/followings').send({ userId: targetUser.id }).expect(200).end(done)
       })
     })
   })
