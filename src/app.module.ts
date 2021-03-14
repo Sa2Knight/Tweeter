@@ -9,10 +9,11 @@ import { TweetController } from './tweet/tweet.controller'
 import { TweetService } from './tweet/tweet.service'
 import { AuthModule } from './auth/auth.module'
 import { Followings } from './entities/followings.entity'
-import { FollowingsController } from './followings/followings.controller';
-import { FollowingsService } from './followings/followings.service';
-import { BookmarkController } from './bookmark/bookmark.controller';
-import { BookmarkService } from './bookmark/bookmark.service';
+import { FollowingsController } from './followings/followings.controller'
+import { FollowingsService } from './followings/followings.service'
+import { BookmarkController } from './bookmark/bookmark.controller'
+import { BookmarkService } from './bookmark/bookmark.service'
+import { Bookmark } from './entities/bookmark.entity'
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { BookmarkService } from './bookmark/bookmark.service';
       port: 3306,
       username: 'root',
       database: `tweeter_${process.env.NODE_ENV}`,
-      entities: [User, Tweet, Followings],
+      entities: [User, Tweet, Followings, Bookmark],
       synchronize: true
     }),
     UsersModule,

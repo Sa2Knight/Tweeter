@@ -6,6 +6,7 @@ import { AppModule } from '../src/app.module'
 import { NestFactory } from '@nestjs/core'
 import { Followings } from '../src/entities/followings.entity'
 import * as request from 'supertest'
+import { Bookmark } from 'src/entities/bookmark.entity'
 
 let app: INestApplication
 let dbConnection: Connection
@@ -18,7 +19,7 @@ beforeAll(async () => {
     port: 3306,
     username: 'root',
     database: 'tweeter_test',
-    entities: [User, Tweet, Followings],
+    entities: [User, Tweet, Followings, Bookmark],
     synchronize: true
   })
   app = await NestFactory.create(AppModule, { logger: false })
@@ -27,6 +28,8 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   logout()
+  // FIMXE: DBクリーナー的なのを作成する
+  await Bookmark.delete({})
   await Followings.delete({})
   await Tweet.delete({})
   await User.delete({})

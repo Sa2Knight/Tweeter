@@ -49,7 +49,10 @@ describe('Bookmark', () => {
 
     it('404: ブックマークしていないツイートの場合', async done => {
       const tweet = await createTweet({ user: currentUser })
-      deleteBookmarkRequest(tweet).expect(404, done)
+      deleteBookmarkRequest(tweet)
+        .expect(404)
+        .expect(res => expect(res.body).toMatchObject({ message: 'Bookmark not found' }))
+        .end(done)
     })
 
     it('400: tweetId を指定しなかった場合', async done => {
