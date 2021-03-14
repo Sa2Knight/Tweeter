@@ -10,6 +10,8 @@ import { FollowingsController } from './followings/followings.controller'
 import { FollowingsService } from './followings/followings.service'
 import { BookmarkController } from './bookmark/bookmark.controller'
 import { BookmarkService } from './bookmark/bookmark.service'
+import { RetweetController } from './retweet/retweet.controller'
+import { RetweetService } from './retweet/retweet.service'
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import { BookmarkService } from './bookmark/bookmark.service'
     UsersModule,
     AuthModule
   ],
-  controllers: [AppController, TweetController, FollowingsController, BookmarkController],
-  providers: [AppService, TweetService, FollowingsService, BookmarkService]
+  controllers: [AppController, TweetController, FollowingsController, BookmarkController, RetweetController],
+  providers: [AppService, TweetService, FollowingsService, BookmarkService, RetweetService]
 })
 export class AppModule {}

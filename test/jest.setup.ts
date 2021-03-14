@@ -1,12 +1,12 @@
 import { INestApplication } from '@nestjs/common'
 import { Tweet } from '../src/entities/tweet.entity'
 import { User } from '../src/entities/user.entity'
-import { Connection, createConnection, Repository } from 'typeorm'
 import { AppModule } from '../src/app.module'
 import { NestFactory } from '@nestjs/core'
 import { Followings } from '../src/entities/followings.entity'
 import * as request from 'supertest'
 import { Bookmark } from 'src/entities/bookmark.entity'
+import { Retweet } from 'src/entities/retweet.entity'
 
 let app: INestApplication
 
@@ -18,6 +18,7 @@ beforeAll(async () => {
 beforeEach(async () => {
   logout()
   // FIMXE: DBクリーナー的なのを作成する
+  await Retweet.delete({})
   await Bookmark.delete({})
   await Followings.delete({})
   await Tweet.delete({})
