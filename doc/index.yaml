@@ -1,0 +1,118 @@
+openapi: 3.0.3
+info:
+  title: tweeter API
+  description: Twitterっぽい何か
+  version: 0.0.1
+servers:
+  - url: http://localhost:3001/api
+    description: ローカル環境
+components:
+    schemas:
+      User:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            example: 4
+          name:
+            type: string
+            example: 'sasaki'
+          displayName:
+            type: string
+            example: 'ささき'
+          description:
+            type: string
+            example: 'よろしくおねがいします！'
+          createdAt:
+            type: string
+            example: '2020/01/01 13:00:00'
+          updatedAt:
+            type: string
+            example: '2020/01/01 13:00:00'
+    responses:
+      400BadRequest:
+        description: リクエスト内容が正常でない場合のエラー
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  enum:
+                    - 404
+                message:
+                  oneOf:
+                    - type: array
+                      items:
+                        type: string
+                      example:
+                        - エラーメッセージ1
+                        - エラーメッセージ2
+                    - type: string
+                      example:
+                        - エラーメッセージ詳細
+                error:
+                  type: string
+                  enum:
+                    - Not Found
+              
+paths:
+  /users/{id}:
+    get:
+      summary: 指定したユーザの情報を取得します
+      tags:
+        - ユーザー
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 対象のユーザID
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '200':
+          description: ユーザーオブジェクト
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+            
+  /users:
+    post:
+      summary: ユーザーを新規作成する
+      tags:
+        - ユーザー
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  example: 'sasaki'
+                displayName:
+                  type: string
+                  example: 'ささき'
+                description:
+                  type: string
+                  example: 'よろしくおねがいします！'
+              required:
+                - name
+                - displayName
+
+      responses:
+        '201':
+          description: ユーザーオブジェクト
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/400BadRequest'

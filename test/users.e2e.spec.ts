@@ -37,7 +37,7 @@ describe('Users', () => {
         .end(done)
     })
 
-    it('name を省略した場合、404 エラーが返ってくる', done => {
+    it('name を省略した場合、400 エラーが返ってくる', done => {
       postUserRequest({ displayName: '笹木', description: '自己紹介' }).expect(400, done)
     })
 
