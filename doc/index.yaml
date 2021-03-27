@@ -119,8 +119,7 @@ components:
                       - エラーメッセージ1
                       - エラーメッセージ2
                   - type: string
-                    example:
-                      - エラーメッセージ詳細
+                    example: エラーメッセージ詳細
               error:
                 type: string
                 enum:
@@ -244,3 +243,5 @@ paths:
           description: tweetId を指定しないか、既にブックマーク済みのツイートを指定した場合
         '404':
           description: 存在しないツイートを指定した場合
+      tags:
+        - ユーザー
