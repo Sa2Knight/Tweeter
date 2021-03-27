@@ -4,62 +4,138 @@ info:
   description: Twitterっぽい何か
   version: 0.0.1
 servers:
-  - url: http://localhost:3001/api
+  - url: 'http://localhost:3001/api'
     description: ローカル環境
 components:
-    schemas:
-      User:
-        type: object
-        properties:
-          id:
-            type: integer
-            format: int64
-            example: 4
-          name:
-            type: string
-            example: 'sasaki'
-          displayName:
-            type: string
-            example: 'ささき'
-          description:
-            type: string
-            example: 'よろしくおねがいします！'
-          createdAt:
-            type: string
-            example: '2020/01/01 13:00:00'
-          updatedAt:
-            type: string
-            example: '2020/01/01 13:00:00'
-    responses:
-      400BadRequest:
-        description: リクエスト内容が正常でない場合のエラー
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                statusCode:
-                  type: integer
-                  enum:
-                    - 404
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 4
+        name:
+          type: string
+          example: sasaki
+        displayName:
+          type: string
+          example: ささき
+        description:
+          type: string
+          example: よろしくおねがいします！
+        createdAt:
+          type: string
+          example: '2020/01/01 13:00:00'
+        updatedAt:
+          type: string
+          example: '2020/01/01 13:00:00'
+      x-examples:
+        example-1:
+          id: 4
+          name: sasaki
+          displayName: ささき
+          description: よろしくおねがいします！
+          createdAt: '2020/01/01 13:00:00'
+          updatedAt: '2020/01/01 13:00:00'
+      title: ''
+      description: ''
+    Bookmark:
+      title: Bookmark
+      type: object
+      description: ブックマークモデル
+      properties:
+        id:
+          type: number
+        user:
+          $ref: '#/components/schemas/User'
+        tweet:
+          $ref: '#/components/schemas/Tweet'
+      x-examples:
+        例1:
+          id: 0
+          user:
+            id: 4
+            name: sasaki
+            displayName: ささき
+            description: よろしくおねがいします！
+            createdAt: '2020/01/01 13:00:00'
+            updatedAt: '2020/01/01 13:00:00'
+          tweet:
+            id: 0
+            text: string
+            user:
+              id: 4
+              name: sasaki
+              displayName: ささき
+              description: よろしくおねがいします！
+              createdAt: '2020/01/01 13:00:00'
+              updatedAt: '2020/01/01 13:00:00'
+            createdAt: string
+    Tweet:
+      description: ''
+      type: object
+      properties:
+        id:
+          type: number
+        text:
+          type: string
+          minLength: 1
+        user:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+      title: ''
+      x-examples:
+        例1:
+          id: 1
+          text: 眠いです
+          user:
+            id: 4
+            name: sasaki
+            displayName: ささき
+            description: よろしくおねがいします！
+            createdAt: '2020/01/01 13:00:00'
+            updatedAt: '2020/01/01 13:00:00'
+          createdAt: '2020/01/01 13:00:00'
+  responses:
+    400BadRequest:
+      description: リクエスト内容が正常でない場合のエラー
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              statusCode:
+                type: integer
+                enum:
+                  - 404
+              message:
+                oneOf:
+                  - type: array
+                    items:
+                      type: string
+                    example:
+                      - エラーメッセージ1
+                      - エラーメッセージ2
+                  - type: string
+                    example:
+                      - エラーメッセージ詳細
+              error:
+                type: string
+                enum:
+                  - Not Found
+          examples:
+            example-1:
+              value:
+                statusCode: 404
                 message:
-                  oneOf:
-                    - type: array
-                      items:
-                        type: string
-                      example:
-                        - エラーメッセージ1
-                        - エラーメッセージ2
-                    - type: string
-                      example:
-                        - エラーメッセージ詳細
-                error:
-                  type: string
-                  enum:
-                    - Not Found
-              
+                  - エラーメッセージ1
+                  - エラーメッセージ2
+                error: Not Found
+  securitySchemes: {}
 paths:
-  /users/{id}:
+  '/users/{id}':
     get:
       summary: 指定したユーザの情報を取得します
       tags:
@@ -80,9 +156,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-        '400':
-          $ref: '#/components/responses/400BadRequest'
-            
+      operationId: getUser
+      description: ''
   /users:
     post:
       summary: ユーザーを新規作成する
@@ -96,17 +171,16 @@ paths:
               properties:
                 name:
                   type: string
-                  example: 'sasaki'
+                  example: sasaki
                 displayName:
                   type: string
-                  example: 'ささき'
+                  example: ささき
                 description:
                   type: string
-                  example: 'よろしくおねがいします！'
+                  example: よろしくおねがいします！
               required:
                 - name
                 - displayName
-
       responses:
         '201':
           description: ユーザーオブジェクト
@@ -116,3 +190,57 @@ paths:
                 $ref: '#/components/schemas/User'
         '400':
           $ref: '#/components/responses/400BadRequest'
+  /bookmarks:
+    post:
+      summary: ''
+      operationId: createBookmark
+      description: ブックマークを作成する
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                tweetId:
+                  type: number
+              required:
+                - tweetId
+            examples:
+              例1:
+                value:
+                  tweetId: 1
+        description: ブックマークするツイートのIDを指定する
+      responses:
+        '201':
+          description: 作成されたブックマークモデルが返ってくる
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bookmark'
+              examples:
+                例1:
+                  value:
+                    id: 0
+                    user:
+                      id: 4
+                      name: sasaki
+                      displayName: ささき
+                      description: よろしくおねがいします！
+                      createdAt: '2020/01/01 13:00:00'
+                      updatedAt: '2020/01/01 13:00:00'
+                    tweet:
+                      id: 0
+                      text: string
+                      user:
+                        id: 4
+                        name: sasaki
+                        displayName: ささき
+                        description: よろしくおねがいします！
+                        createdAt: '2020/01/01 13:00:00'
+                        updatedAt: '2020/01/01 13:00:00'
+                      createdAt: string
+        '400':
+          description: tweetId を指定しないか、既にブックマーク済みのツイートを指定した場合
+        '404':
+          description: 存在しないツイートを指定した場合
